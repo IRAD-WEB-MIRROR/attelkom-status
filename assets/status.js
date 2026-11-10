@@ -7,7 +7,7 @@
   var D = el ? JSON.parse(el.textContent) : null;
   var RANK = { ok: 0, maint: 1, minor: 2, partial: 3, major: 4 };
   var LBL = { ok: "Operational", maint: "Under maintenance", minor: "Degraded performance", partial: "Partial outage", major: "Major outage" };
-  var power = [], today = null;
+  var power = [], today = null, incs = [];
 
   function d2(n) { return (n < 10 ? "0" : "") + n; }
   function irt(t) { return new Date((t || Date.now()) + H6); }           // read with getUTC*
@@ -100,8 +100,23 @@
       var note = "Power works of the electricity supplier, " + r.area + " (" + r.from + "–" + r.to + "): equipment on reserve power.";
       set(c, (b - a) >= 5 * 36e5 ? "minor" : "ok", note);
     });
+    // today's incidents (the shared list in today's numbers): storm damage, a closed pass; the same times as Iradenergo
+    var passInc = false;
+    incs.forEach(function (x) {
+      (x.telecom || []).forEach(function (r) {
+        var a = ep(r.from), b = r.to ? ep(r.to) : Infinity;
+        if (now < a) return;
+        if (x.kind === "pass" && now < b) passInc = true;
+        if (now < b) {
+          r.comps.forEach(function (c) { set(c, r.impact, r.title + "."); });
+          card(r.impact, r.title, LBL[r.impact] + " · since " + r.from.slice(8, 10) + "." + r.from.slice(5, 7) + " " + r.from.slice(11) + (r.to ? " · expected restoration " + r.to.slice(11) : ""), r.text);
+        } else if (now - b < 12 * 36e5) {
+          card("notice", r.title, "Resolved · " + r.from.slice(11) + " – " + r.to.slice(11), "Service has been restored. We apologise for the inconvenience.");
+        }
+      });
+    });
     // mountain roads (today's numbers)
-    if (roads) roads.forEach(function (r) {
+    if (roads && !passInc) roads.forEach(function (r) {
       if ((r.id === "alabel" || r.id === "otmek") && r.status === "closed")
         set("r-toktogul", "minor", "Road to relay towers closed (" + (r.name && r.name.en || r.id) + "): restoration after faults may take longer.");
     });
@@ -149,6 +164,6 @@
 
   try {
     fetch(root + "data/power.json").then(function (r) { return r.json(); }).then(function (j) { power = j.rows || []; drawPower(); evaluate(); })["catch"](function () {});
-    fetch("https://iradone.com/data/today.json").then(function (r) { return r.json(); }).then(function (j) { roads = (j.season && j.season.roads) || null; evaluate(); })["catch"](function () {});
+    fetch("https://iradone.com/data/today.json").then(function (r) { return r.json(); }).then(function (j) { roads = (j.season && j.season.roads) || null; incs = (j.incidents && j.incidents.list) || []; evaluate(); })["catch"](function () {});
   } catch (e) {}
 })();
