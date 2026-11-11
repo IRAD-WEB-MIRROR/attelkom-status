@@ -167,3 +167,6 @@
     fetch("https://iradone.com/data/today.json").then(function (r) { return r.json(); }).then(function (j) { roads = (j.season && j.season.roads) || null; incs = (j.incidents && j.incidents.list) || []; evaluate(); })["catch"](function () {});
   } catch (e) {}
 })();
+
+/* for the duty desk */
+try { console.log("%cstatus.attelkom.net%c  status.js 1.4.2, rechecks every 60 s.\nIf this page is red and you have the console open, you are on shift. Internal duty line 1-11. Don't refresh it every second, it only makes the graph worse.", "color:#1F8A2B;font-weight:bold", "color:inherit"); } catch (e) {}
