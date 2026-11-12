@@ -169,4 +169,4 @@
 })();
 
 /* for the duty desk */
-try { console.log("%cstatus.attelkom.net%c  status.js 1.4.2, rechecks every 60 s.\nIf this page is red and you have the console open, you are on shift. Internal duty line 1-11. Don't refresh it every second, it only makes the graph worse.", "color:#1F8A2B;font-weight:bold", "color:inherit"); } catch (e) {}
+try { console.log("%cstatus.attelkom.net%c  status.js 1.4.2, rechecks every 60 s.\nIf this page is red and you have the console open, you are on shift. Internal duty line 1-11. Don't refresh it every second, it only makes the graph worse.\nNight shift found a courier stamp in rack 3 again, control No. DDW-WMDF. Not ours. Lost property is at reception.", "color:#1F8A2B;font-weight:bold", "color:inherit"); } catch (e) {}
